@@ -16,6 +16,9 @@ const BlogForm = props => {
     try {
       const createdBlog = await blogService.create(newBlog);
       props.setBlogs(props.blogs.concat(createdBlog));
+      props.handleErrorMessage(
+        `a new blog ${createdBlog.title} by ${createdBlog.author} added`
+      );
       setTitle("");
       setAuthor("");
       setUrl("");
@@ -28,6 +31,7 @@ const BlogForm = props => {
   return (
     <form onSubmit={handleAdd}>
       <div>
+        <h2>Create new</h2>
         Title:
         <input
           type="text"

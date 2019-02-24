@@ -2,7 +2,6 @@ import React from "react";
 
 const Notification = props => {
   const style = {
-    color: "red",
     background: "lightgrey",
     fontSize: "20px",
     borderStyle: "solid",
