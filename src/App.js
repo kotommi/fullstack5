@@ -2,44 +2,15 @@ import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-
-const LoginForm = ({
-  username,
-  setUsername,
-  password,
-  setPassword,
-  handleLogin
-}) => {
-  return (
-    <form onSubmit={handleLogin}>
-      <div>
-        Käyttäjätunnus
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        salasana
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">kirjaudu</button>
-    </form>
-  );
-};
+import BlogForm from "./components/BlogForm";
+import LoginForm from "./components/LoginForm";
+import Notification from "./components/Notification";
 
 const makeRows = blogs => {
   return (
     <div>
       {blogs.map(blog => (
-        <Blog key={blog.title} blog={blog} />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   );
@@ -50,10 +21,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const setErrorMessage = asd => {
-    console.log(asd);
-  };
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleLogin = async event => {
     event.preventDefault();
@@ -63,21 +31,21 @@ const App = () => {
         password
       });
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
+      blogService.setToken(user.token);
       setUser(user);
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("käyttäjätunnus tai salasana virheellinen");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      handleErrorMessage(exception.response.data.error);
     }
   };
 
-  // load blogs from api
-  //useEffect(() => {
-  //  blogService.getAll().then(blogs => setBlogs(blogs));
-  //}, []);
+  const handleErrorMessage = message => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 5000);
+  };
 
   const blogHook = () => {
     blogService.getAll().then(blogs => setBlogs(blogs));
@@ -104,6 +72,7 @@ const App = () => {
     return (
       <div>
         <h2>log in to application</h2>
+        <Notification message={errorMessage} />
         <LoginForm
           username={username}
           setUsername={setUsername}
@@ -117,8 +86,14 @@ const App = () => {
     return (
       <div>
         <h2>blogs</h2>
+        <Notification message={errorMessage} />
         <p>{user.username} is logged in</p>
         <button onClick={handleLogout}>logout</button>
+        <BlogForm
+          setBlogs={setBlogs}
+          blogs={blogs}
+          handleErrorMessage={handleErrorMessage}
+        />
         {makeRows(blogs)}
       </div>
     );
