@@ -30,7 +30,7 @@ const BlogForm = props => {
   };
 
   return (
-    <form onSubmit={handleAdd}>
+    <form className="blogform" onSubmit={handleAdd}>
       <div>
         <h2>Create new</h2>
         Title:
