@@ -5,6 +5,7 @@ import loginService from "./services/login";
 import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 
 const makeRows = blogs => {
   return (
@@ -71,7 +72,6 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <h2>log in to application</h2>
         <Notification message={errorMessage} />
         <LoginForm
           username={username}
@@ -89,11 +89,13 @@ const App = () => {
         <Notification message={errorMessage} />
         <p>{user.username} is logged in</p>
         <button onClick={handleLogout}>logout</button>
-        <BlogForm
-          setBlogs={setBlogs}
-          blogs={blogs}
-          handleErrorMessage={handleErrorMessage}
-        />
+        <Togglable buttonLabel={"create new"}>
+          <BlogForm
+            setBlogs={setBlogs}
+            blogs={blogs}
+            handleErrorMessage={handleErrorMessage}
+          />
+        </Togglable>
         {makeRows(blogs)}
       </div>
     );
