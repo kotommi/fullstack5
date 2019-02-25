@@ -15,6 +15,7 @@ const BlogForm = props => {
     };
     try {
       const createdBlog = await blogService.create(newBlog);
+      props.blogFormRef.current.toggleVisibility();
       props.setBlogs(props.blogs.concat(createdBlog));
       props.handleErrorMessage(
         `a new blog ${createdBlog.title} by ${createdBlog.author} added`

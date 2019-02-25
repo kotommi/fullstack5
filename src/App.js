@@ -24,6 +24,8 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
 
+  const blogFormRef = React.createRef();
+
   const handleLogin = async event => {
     event.preventDefault();
     try {
@@ -89,11 +91,12 @@ const App = () => {
         <Notification message={errorMessage} />
         <p>{user.username} is logged in</p>
         <button onClick={handleLogout}>logout</button>
-        <Togglable buttonLabel={"create new"}>
+        <Togglable buttonLabel={"create new"} ref={blogFormRef}>
           <BlogForm
             setBlogs={setBlogs}
             blogs={blogs}
             handleErrorMessage={handleErrorMessage}
+            blogFormRef={blogFormRef}
           />
         </Togglable>
         {makeRows(blogs)}
