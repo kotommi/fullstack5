@@ -6,6 +6,7 @@ import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import { useField } from "./hooks";
 
 const makeRows = (blogs, removeBlog, user) => {
   // copy first?
@@ -28,8 +29,8 @@ const makeRows = (blogs, removeBlog, user) => {
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const name = useField("text");
+  const password = useField("password");
   const [errorMessage, setErrorMessage] = useState(null);
 
   const blogFormRef = React.createRef();
@@ -38,14 +39,14 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({
-        username,
-        password
+        username: name.value,
+        password: password.value
       });
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
       blogService.setToken(user.token);
+      name.reset();
+      password.reset();
       setUser(user);
-      setUsername("");
-      setPassword("");
     } catch (exception) {
       handleErrorMessage(exception.response.data.error);
     }
@@ -98,13 +99,7 @@ const App = () => {
     return (
       <div>
         <Notification message={errorMessage} />
-        <LoginForm
-          username={username}
-          setUsername={setUsername}
-          password={password}
-          setPassword={setPassword}
-          handleLogin={handleLogin}
-        />
+        <LoginForm name={name} password={password} handleLogin={handleLogin} />
       </div>
     );
   } else {
