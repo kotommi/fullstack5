@@ -1,6 +1,5 @@
 import React from "react";
 import { render } from "react-testing-library";
-import { prettyDOM, getByText } from "dom-testing-library";
 import SimpleBlog from "./SimpleBlog";
 import { fireEvent } from "react-testing-library/dist";
 

@@ -12,7 +12,7 @@ const makeRows = (blogs, removeBlog, user) => {
   // make a component
   blogs.sort((a, b) => b.likes - a.likes);
   return (
-    <div>
+    <div className="blog">
       {blogs.map(blog => (
         <Blog
           key={blog.id}
