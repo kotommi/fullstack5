@@ -7,11 +7,19 @@ import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 
-const makeRows = blogs => {
+const makeRows = (blogs, removeBlog, user) => {
+  // copy first?
+  // make a component
+  blogs.sort((a, b) => b.likes - a.likes);
   return (
     <div>
       {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          removeBlog={removeBlog}
+          currentUser={user}
+        />
       ))}
     </div>
   );
@@ -40,6 +48,21 @@ const App = () => {
       setPassword("");
     } catch (exception) {
       handleErrorMessage(exception.response.data.error);
+    }
+  };
+
+  const removeBlog = async blog => {
+    const confirmation = window.confirm(
+      `remove blog ${blog.title} by ${blog.author}?`
+    );
+    if (!confirmation) {
+      return;
+    }
+    try {
+      await blogService.remove(blog.id);
+      setBlogs(blogs.filter(b => b.id !== blog.id));
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -99,7 +122,7 @@ const App = () => {
             blogFormRef={blogFormRef}
           />
         </Togglable>
-        {makeRows(blogs)}
+        {makeRows(blogs, removeBlog, user)}
       </div>
     );
   }

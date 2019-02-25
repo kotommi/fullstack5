@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, removeBlog, currentUser }) => {
   const [visible, setVisible] = useState(false);
 
   //const hideWhenVisible = { display: visible ? "none" : "" };
@@ -28,6 +28,16 @@ const Blog = ({ blog }) => {
     }
   };
 
+  const removeButton = () => {
+    if (
+      !blog.user ||
+      !currentUser ||
+      blog.user.username !== currentUser.username
+    ) {
+      return <span />;
+    } else return <button onClick={() => removeBlog(blog)}>remove</button>;
+  };
+
   return (
     <div style={blogStyle} onClick={() => toggleVisibility()}>
       {blog.title} {blog.author}
@@ -40,6 +50,7 @@ const Blog = ({ blog }) => {
           <button onClick={() => addLike()}>like</button>
         </p>
         <p>added by {!blog.user ? "anonymous" : blog.user.username}</p>
+        {removeButton()}
       </div>
     </div>
   );
