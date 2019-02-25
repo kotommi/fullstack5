@@ -39,15 +39,16 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({
-        username: name.value,
-        password: password.value
+        username: name.input.value,
+        password: password.input.value
       });
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      name.reset();
-      password.reset();
+      name.reset.reset();
+      password.reset.reset();
       setUser(user);
     } catch (exception) {
+      console.log(exception);
       handleErrorMessage(exception.response.data.error);
     }
   };
@@ -99,7 +100,11 @@ const App = () => {
     return (
       <div>
         <Notification message={errorMessage} />
-        <LoginForm name={name} password={password} handleLogin={handleLogin} />
+        <LoginForm
+          name={name.input}
+          password={password.input}
+          handleLogin={handleLogin}
+        />
       </div>
     );
   } else {
