@@ -51,6 +51,7 @@ export const addLike = blog => {
   };
 };
 
+// TODO/FIXME: Fix in backend, doesn't return user properly, (only id)
 export const createBlog = blog => {
   return async dispatch => {
     const createdBlog = await blogService.create(blog);
