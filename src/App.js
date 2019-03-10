@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import BlogForm from "./components/BlogForm";
@@ -7,31 +6,13 @@ import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import { useField } from "./hooks";
-
-const makeRows = (blogs, removeBlog, user) => {
-  // copy first?
-  // make a component
-  blogs.sort((a, b) => b.likes - a.likes);
-  return (
-    <div className="blog">
-      {blogs.map(blog => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          removeBlog={removeBlog}
-          currentUser={user}
-        />
-      ))}
-    </div>
-  );
-};
+import BlogList from "./components/BlogList";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const name = useField("text");
   const password = useField("password");
-  const [errorMessage, setErrorMessage] = useState(null);
 
   const blogFormRef = React.createRef();
 
@@ -49,7 +30,8 @@ const App = () => {
       setUser(user);
     } catch (exception) {
       console.log(exception);
-      handleErrorMessage(exception.response.data.error);
+      //handleErrorMessage(exception.response.data.error);
+      //change to setNotification when App has redux props
     }
   };
 
@@ -66,13 +48,6 @@ const App = () => {
     } catch (e) {
       console.log(e);
     }
-  };
-
-  const handleErrorMessage = message => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 5000);
   };
 
   const blogHook = () => {
@@ -99,7 +74,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <Notification message={errorMessage} />
+        <Notification />
         <LoginForm
           name={name.input}
           password={password.input}
@@ -111,18 +86,17 @@ const App = () => {
     return (
       <div>
         <h2>blogs</h2>
-        <Notification message={errorMessage} />
+        <Notification />
         <p>{user.username} is logged in</p>
         <button onClick={handleLogout}>logout</button>
         <Togglable buttonLabel={"create new"} ref={blogFormRef}>
           <BlogForm
             setBlogs={setBlogs}
             blogs={blogs}
-            handleErrorMessage={handleErrorMessage}
             blogFormRef={blogFormRef}
           />
         </Togglable>
-        {makeRows(blogs, removeBlog, user)}
+        <BlogList blogs={blogs} removeBlog={removeBlog} user={user} />
       </div>
     );
   }
