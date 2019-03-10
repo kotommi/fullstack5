@@ -7,14 +7,20 @@ import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import { useField } from "./hooks";
 import BlogList from "./components/BlogList";
+import { connect } from "react-redux";
+import { initBlogs } from "./reducers/blogReducer";
+import { changeNotification } from "./reducers/notificationReducer";
 
-const App = () => {
-  const [blogs, setBlogs] = useState([]);
+const App = props => {
   const [user, setUser] = useState(null);
   const name = useField("text");
   const password = useField("password");
 
   const blogFormRef = React.createRef();
+
+  useEffect(() => {
+    props.initBlogs();
+  }, []);
 
   const handleLogin = async event => {
     event.preventDefault();
@@ -29,32 +35,9 @@ const App = () => {
       password.reset.reset();
       setUser(user);
     } catch (exception) {
-      console.log(exception);
-      //handleErrorMessage(exception.response.data.error);
-      //change to setNotification when App has redux props
+      props.changeNotification(exception.response.data.error);
     }
   };
-
-  const removeBlog = async blog => {
-    const confirmation = window.confirm(
-      `remove blog ${blog.title} by ${blog.author}?`
-    );
-    if (!confirmation) {
-      return;
-    }
-    try {
-      await blogService.remove(blog.id);
-      setBlogs(blogs.filter(b => b.id !== blog.id));
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const blogHook = () => {
-    blogService.getAll().then(blogs => setBlogs(blogs));
-  };
-
-  useEffect(blogHook, []);
 
   // load user from localstorage
   useEffect(() => {
@@ -90,16 +73,15 @@ const App = () => {
         <p>{user.username} is logged in</p>
         <button onClick={handleLogout}>logout</button>
         <Togglable buttonLabel={"create new"} ref={blogFormRef}>
-          <BlogForm
-            setBlogs={setBlogs}
-            blogs={blogs}
-            blogFormRef={blogFormRef}
-          />
+          <BlogForm blogFormRef={blogFormRef} />
         </Togglable>
-        <BlogList blogs={blogs} removeBlog={removeBlog} user={user} />
+        <BlogList user={user} />
       </div>
     );
   }
 };
 
-export default App;
+export default connect(
+  null,
+  { initBlogs, changeNotification }
+)(App);

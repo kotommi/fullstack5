@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import blogService from "../services/blogs";
+import { connect } from "react-redux";
+import { addLike, removeBlog } from "../reducers/blogReducer";
+import { changeNotification } from "../reducers/notificationReducer";
 
-const Blog = ({ blog, removeBlog, currentUser }) => {
+const Blog = props => {
+  const blog = props.blog;
   const [visible, setVisible] = useState(false);
 
   //const hideWhenVisible = { display: visible ? "none" : "" };
@@ -19,23 +22,24 @@ const Blog = ({ blog, removeBlog, currentUser }) => {
     marginBottom: 5
   };
 
-  const addLike = async () => {
-    blog.likes = Number(blog.likes) + 1;
+  const handleLike = async () => {
     try {
-      await blogService.update(blog.id, blog);
+      props.addLike(blog);
     } catch (e) {
       console.log(e.response.data.message);
+      props.changeNotification(e.response.data.message);
     }
   };
 
   const removeButton = () => {
     if (
       !blog.user ||
-      !currentUser ||
-      blog.user.username !== currentUser.username
+      !props.currentUser ||
+      blog.user.username !== props.currentUser.username
     ) {
       return <span />;
-    } else return <button onClick={() => removeBlog(blog)}>remove</button>;
+    } else
+      return <button onClick={() => props.removeBlog(blog)}>remove</button>;
   };
 
   return (
@@ -47,7 +51,7 @@ const Blog = ({ blog, removeBlog, currentUser }) => {
         </p>
         <p>
           {`${blog.likes} likes`}
-          <button onClick={() => addLike()}>like</button>
+          <button onClick={() => handleLike()}>like</button>
         </p>
         <p>added by {!blog.user ? "anonymous" : blog.user.username}</p>
         {removeButton()}
@@ -56,4 +60,7 @@ const Blog = ({ blog, removeBlog, currentUser }) => {
   );
 };
 
-export default Blog;
+export default connect(
+  null,
+  { addLike, removeBlog, changeNotification }
+)(Blog);

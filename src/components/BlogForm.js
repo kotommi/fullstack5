@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import blogService from "../services/blogs";
 import { changeNotification } from "../reducers/notificationReducer";
+import { createBlog } from "../reducers/blogReducer";
 import { connect } from "react-redux";
 
 const BlogForm = props => {
@@ -16,21 +16,16 @@ const BlogForm = props => {
       url: url
     };
     try {
-      const createdBlog = await blogService.create(newBlog);
       props.blogFormRef.current.toggleVisibility();
-      props.setBlogs(props.blogs.concat(createdBlog));
-      //props.handleErrorMessage(
-      //  `a new blog ${createdBlog.title} by ${createdBlog.author} added`
-      //);
+      props.createBlog(newBlog);
       props.changeNotification(
-        `a new blog ${createdBlog.title} by ${createdBlog.author} added`
+        `a new blog ${newBlog.title} by ${newBlog.author} added`
       );
       setTitle("");
       setAuthor("");
       setUrl("");
     } catch (exception) {
       const message = exception.response.data.error;
-      //props.handleErrorMessage(message);
       props.changeNotification(message);
     }
   };
@@ -73,7 +68,8 @@ const BlogForm = props => {
 };
 
 const mapDispatchToProps = {
-  changeNotification
+  changeNotification,
+  createBlog
 };
 
 export default connect(

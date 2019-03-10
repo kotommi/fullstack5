@@ -1,23 +1,24 @@
 import React from "react";
 import Blog from "./Blog";
+import { connect } from "react-redux";
 
-const BlogList = ({ blogs, removeBlog, user }) => {
-  if (!blogs || !user) {
+const BlogList = props => {
+  if (!props.blogs || !props.user) {
     return null;
   }
-  blogs.sort((a, b) => b.likes - a.likes);
   return (
     <div className="blog">
-      {blogs.map(blog => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          removeBlog={removeBlog}
-          currentUser={user}
-        />
+      {props.blogs.map(blog => (
+        <Blog key={blog.id} blog={blog} currentUser={props.user} />
       ))}
     </div>
   );
 };
 
-export default BlogList;
+const mapStateToProps = state => {
+  return {
+    blogs: state.blogs
+  };
+};
+
+export default connect(mapStateToProps)(BlogList);
