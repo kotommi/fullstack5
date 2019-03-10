@@ -1,18 +1,26 @@
 import React, { useEffect } from "react";
+import {
+  BrowserRouter,
+  Route,
+  Link,
+  Redirect,
+  withRouter
+} from "react-router-dom";
 import blogService from "./services/blogs";
-import BlogForm from "./components/BlogForm";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
-import BlogList from "./components/BlogList";
-import UserControl from "./components/UserControl";
+import Users from "./components/Users";
+import Home from "./components/Home";
+import User from "./components/User";
+import Blog from "./components/Blog";
 import { connect } from "react-redux";
 import { initBlogs } from "./reducers/blogReducer";
 import { setUser } from "./reducers/userReducer";
+import { initUsers } from "./reducers/userlistReducer";
+import Menu from "./components/Menu";
 
 const App = props => {
   const user = props.user;
-  const blogFormRef = React.createRef();
 
   // load blogs and user with effects
   useEffect(() => {
@@ -26,6 +34,9 @@ const App = props => {
       blogService.setToken(user.token);
     }
   }, []);
+  useEffect(() => {
+    props.initUsers();
+  }, []);
   //
 
   if (user === null) {
@@ -38,13 +49,24 @@ const App = props => {
   } else {
     return (
       <div>
-        <h2>blogs</h2>
-        <Notification />
-        <UserControl />
-        <Togglable buttonLabel={"create new"} ref={blogFormRef}>
-          <BlogForm blogFormRef={blogFormRef} />
-        </Togglable>
-        <BlogList />
+        <BrowserRouter>
+          <div>
+            <Menu />
+            <Notification />
+            <Route exact path="/" render={() => <Home />} />
+            <Route exact path="/users" render={() => <Users />} />
+            <Route
+              exact
+              path="/users/:id"
+              render={({ match }) => <User id={match.params.id} />}
+            />
+            <Route
+              exact
+              path="/blogs/:id"
+              render={({ match }) => <Blog id={match.params.id} />}
+            />
+          </div>
+        </BrowserRouter>
       </div>
     );
   }
@@ -58,5 +80,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { initBlogs, setUser }
+  { initBlogs, setUser, initUsers }
 )(App);

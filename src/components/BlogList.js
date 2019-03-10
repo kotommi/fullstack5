@@ -1,18 +1,31 @@
 import React from "react";
-import Blog from "./Blog";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
 const BlogList = props => {
   if (!props.blogs || !props.user) {
     return null;
   }
-  return (
-    <div className="blog">
-      {props.blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} currentUser={props.user} />
-      ))}
-    </div>
-  );
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: "solid",
+    borderWidth: 1,
+    marginBottom: 5
+  };
+
+  const makeRow = blog => {
+    return (
+      <div key={blog.id} style={blogStyle}>
+        <Link to={`/blogs/${blog.id}`}>{`${blog.title} by ${
+          blog.author
+        }`}</Link>
+      </div>
+    );
+  };
+
+  return <div className="blog">{props.blogs.map(blog => makeRow(blog))}</div>;
 };
 
 const mapStateToProps = state => {
